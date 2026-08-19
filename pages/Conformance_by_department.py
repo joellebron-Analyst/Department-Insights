@@ -293,7 +293,7 @@ with col2:
 
 with col3:
     # FIX: el semáforo ahora sí se aplica al índice
-    kpi_card("Índice de Productividad", f"{m['indice']:.1f}%",
+    kpi_card("Índice de Conformidad", f"{m['indice']:.1f}%",
              "Meta ≥ 90% · Crítico < 85%", color_semaforo(m['indice']))
 
 with col4:
