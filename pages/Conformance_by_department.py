@@ -22,7 +22,7 @@ def cargar_datos():
 @st.cache_data
 def cargar_roster():
     # FIX: el roster también se cachea para no descargarlo en cada rerun
-    return pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQxlh339pqtikjBlsyAGEUSsJQs5RpNrfoh8SOKS9pcmwT5Wzjwlx4ZaJBWUAFE0yeOMWyhmwg88y/pub?gid=182944612&single=true&output=csv')
+    return pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vS0HaWItYoSrWOqFq8Mmm0NnSDo7zok8lzqbBpmjuyeRpNVLwZZ8wEumtoNh-t3ucHEQ0I_qCrXAF39/pub?gid=220893030&single=true&output=csv')
 
 
 data = cargar_datos()
