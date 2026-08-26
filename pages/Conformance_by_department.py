@@ -108,6 +108,8 @@ def preparar_datos(df):
     Recibe un DataFrame ya filtrado y devuelve una copia procesada."""
     df = df.copy()  # FIX: evita SettingWithCopyWarning al modificar un slice
 
+
+
     df = df[['datestamp', 'Full Name', 'LOB', 'Status', 'Schedule In',
              'Schedule Out', 'Scheduled Hours', 'Clock in time', 'away',
              'Lunch', 'Clock out time', 'Total work time']]
@@ -158,7 +160,16 @@ def calcular_metricas(df, lob, dias_laborables):
     esperado = max(esperado_bruto - dias_vacacion * 8, 0)
 
     # Horas obtenidas
-    total = df['Total work time'].sum()
+    # Nos aseguramos que solo se muestren las filas donde no hayan vacaciones
+
+
+    total = df.loc[
+
+        df['Status'] != 'Vacation', 'Total work time'
+
+
+    ].sum()
+
     obtenido = total.total_seconds() / 3600 if pd.notna(total) and total != 0 else 0
 
     # Brecha evitable (tardanzas + lunch + early outs), en horas
