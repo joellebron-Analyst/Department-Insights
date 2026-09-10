@@ -48,15 +48,29 @@ STATUS_LICENCIA = ['MEDICAL LICENSE', 'Sick Leave']
 # Se ven ambas variantes en el CSV real: 'Vacation' y 'Vacations'.
 STATUS_VACACION = ['VACATION', 'VACATIONS']
 
+# nombres_excluidos = [
+#     'JUAN MIGUEL MENDEZ',
+#     'KIMBERLY MILDRED NUÑEZ GAUTREAUX',
+#     'YAEL JOHANNY CARO MARTINEZ', 'SAMUEL ENRIQUE SOLIS OZORIA',
+#     'ELAINI ENCARNACION MAYNERD', 'JOHNANGEL RAMIREZ GUTIERREZ',
+#     'PALMIRA MIGUELINA ECHAVARRIA VARGAS',
+#     'ADRIAN PEÑA PAULINO', 'NEFTALY AGUSTIN MADERA CORONADO',
+#     'CELUMIEL ODILET BALBUENA JAVIER',
+#     'EMMANUEL DAVID MARTE DIAZ', 'VICTOR JOEL CONTRERAS MALDONADO',
+#     'ASHLIE GABRIELA VASQUEZ SANTIAGO'
+# ]
+
 nombres_excluidos = [
     'JUAN MIGUEL MENDEZ',
     'KIMBERLY MILDRED NUÑEZ GAUTREAUX',
-    'YAEL JOHANNY CARO MARTINEZ', 'SAMUEL ENRIQUE SOLIS OZORIA',
-    'ELAINI ENCARNACION MAYNERD', 'JOHNANGEL RAMIREZ GUTIERREZ',
+    'YAEL JOHANNY CARO MARTINEZ', 
+    'SAMUEL ENRIQUE SOLIS OZORIA',
+    'ELAINI ENCARNACION MAYNERD', 
+    'JOHNANGEL RAMIREZ GUTIERREZ',
     'PALMIRA MIGUELINA ECHAVARRIA VARGAS',
-    'ADRIAN PEÑA PAULINO', 'NEFTALY AGUSTIN MADERA CORONADO',
-    'CELUMIEL ODILET BALBUENA JAVIER',
-    'EMMANUEL DAVID MARTE DIAZ', 'VICTOR JOEL CONTRERAS MALDONADO',
+    'ADRIAN PEÑA PAULINO', 
+    'NEFTALY AGUSTIN MADERA CORONADO',
+    'VICTOR JOEL CONTRERAS MALDONADO',
     'ASHLIE GABRIELA VASQUEZ SANTIAGO'
 ]
 
@@ -147,17 +161,23 @@ def calcular_metricas(df, lob, dias_laborables):
     # completo — los períodos deben coincidir para que el índice tenga sentido
     n_empleados = roster.loc[
         (roster['LOB'] == lob)
-        & (~roster['Full Name'].isin(nombres_excluidos)),
+        & (~roster['Full Name'].isin(nombres_excluidos))
+        & (~roster['Status'].str.upper().str.strip().isin(STATUS_VACACION)),
         'Full Name'
     ].size
-    esperado_bruto = n_empleados * 8 * dias_laborables
 
-    # Los días de vacaciones no se esperan: por cada día de vacaciones
+# Los días de vacaciones no se esperan: por cada día de vacaciones
     # registrado en el período se descuentan 8h del esperado.
     dias_vacacion = int(
         df['Status'].str.upper().str.strip().isin(STATUS_VACACION).sum()
     )
-    esperado = max(esperado_bruto - dias_vacacion * 8, 0)
+
+
+
+    esperado_bruto = (n_empleados * 8 * dias_laborables)
+
+    
+    esperado = max(esperado_bruto, 0)
 
     # Horas obtenidas
     # Nos aseguramos que solo se muestren las filas donde no hayan vacaciones
@@ -165,7 +185,8 @@ def calcular_metricas(df, lob, dias_laborables):
 
     total = df.loc[
 
-        df['Status'] != 'Vacation', 'Total work time'
+        ~df['Status'].str.upper().str.strip().isin(STATUS_VACACION)&
+        (~df['Full Name'].isin(nombres_excluidos)), 'Total work time'
 
 
     ].sum()
