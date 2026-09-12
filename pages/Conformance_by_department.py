@@ -156,13 +156,21 @@ def calcular_metricas(df, lob, dias_laborables):
     Devuelve un diccionario — así el mismo cálculo sirve para los KPIs
     (LOB seleccionado) y para el gráfico (loop sobre todos los LOBs)."""
 
+
+    personas_en_vacaciones = df.loc[
+        df['Status'].str.upper().str.strip().isin(STATUS_VACACION), 'Full Name'
+
+    ].str.upper().str.strip().tolist()
+
+
+
     # Horas esperadas: empleados del roster × 8h × días laborables del mes
     # FIX: antes era × 5 días (una semana) pero el obtenido sumaba el mes
     # completo — los períodos deben coincidir para que el índice tenga sentido
     n_empleados = roster.loc[
         (roster['LOB'] == lob)
-        & (~roster['Full Name'].isin(nombres_excluidos))
-        & (~roster['Status'].str.upper().str.strip().isin(STATUS_VACACION)),
+        & (~roster['Full Name'].str.upper().str.strip().isin(nombres_excluidos))&
+        (~roster['Full Name'].str.upper().str.strip().isin(personas_en_vacaciones)),
         'Full Name'
     ].size
 
@@ -185,7 +193,7 @@ def calcular_metricas(df, lob, dias_laborables):
 
     total = df.loc[
 
-        ~df['Status'].str.upper().str.strip().isin(STATUS_VACACION)&
+        ~df['Full Name'].str.upper().str.strip().isin(personas_en_vacaciones)&
         (~df['Full Name'].isin(nombres_excluidos)), 'Total work time'
 
 
@@ -310,7 +318,7 @@ st.markdown(
     f"### {lob_seleccionado} — {fecha_inicio.strftime('%d/%m/%Y')} al {fecha_fin.strftime('%d/%m/%Y')}"
 )
 
-col1, col2, col3, col4, col5 = st.columns(5)
+col1, col2, col3, col4, col5, col6 = st.columns(6)
 
 with col1:
     # FIX: subtexto coherente (antes decía "Meta ≥ 90%" en horas esperadas)
@@ -338,6 +346,15 @@ with col5:
     kpi_card("Pérdida No Evitable", f"{m['pct_no_evitable']:.1f}%",
              f"{formato_horas(m['no_evitable'])} — {m['dias_licencia']} días de licencia médica",
              "#64748b")
+
+with col6:
+    kpi_card(
+        "Horas Esperadas Brutas",
+        f"{m['esperado_bruto']:,}",
+        "Antes de descontar vacaciones",
+        "#64748b"
+    )
+
 
 
 # ════════════════════════════════════════════════════════════
