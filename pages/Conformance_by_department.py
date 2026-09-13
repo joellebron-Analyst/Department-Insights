@@ -318,7 +318,7 @@ st.markdown(
     f"### {lob_seleccionado} — {fecha_inicio.strftime('%d/%m/%Y')} al {fecha_fin.strftime('%d/%m/%Y')}"
 )
 
-col1, col2, col3, col4, col5, col6 = st.columns(6)
+col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
     # FIX: subtexto coherente (antes decía "Meta ≥ 90%" en horas esperadas)
@@ -347,13 +347,6 @@ with col5:
              f"{formato_horas(m['no_evitable'])} — {m['dias_licencia']} días de licencia médica",
              "#64748b")
 
-with col6:
-    kpi_card(
-        "Horas Esperadas Brutas",
-        f"{m['esperado_bruto']:,}",
-        "Antes de descontar vacaciones",
-        "#64748b"
-    )
 
 
 
